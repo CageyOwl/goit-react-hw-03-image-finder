@@ -51,6 +51,7 @@ export class App extends React.Component {
     this.setState(prevState => {
       return { page: ++prevState.page };
     });
+    
     animateScroll.scrollToBottom({
       duration: 1000,
       delay: 0,
