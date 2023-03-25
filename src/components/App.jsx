@@ -14,9 +14,9 @@ export class App extends React.Component {
     status: 'idle',
     error: '',
     searchQuery: '',
-    hits: [],
     page: 0,
     maxPage: 0,
+    hits: [],
     isModalOpened: false,
     modalImgAlt: '',
     modalImgURL: '',
@@ -51,7 +51,7 @@ export class App extends React.Component {
     this.setState(prevState => {
       return { page: ++prevState.page };
     });
-    
+
     animateScroll.scrollToBottom({
       duration: 1000,
       delay: 0,
@@ -59,12 +59,7 @@ export class App extends React.Component {
     });
   };
 
-  async componentDidUpdate(prevProps, prevState) {
-    const { searchQuery, page } = this.state;
-    if (searchQuery === prevState.searchQuery && page === prevState.page) {
-      return;
-    }
-
+  loadNewImages = async (searchQuery, page, prevState) => {
     this.setState({ status: 'pending' });
 
     let data = {};
@@ -82,12 +77,26 @@ export class App extends React.Component {
       this.setState({
         hits: [...data.hits],
         maxPage: Math.ceil(data.totalHits / PER_PAGE),
-      })
+      });
     } else {
       this.setState({ hits: [...prevState.hits, ...data.hits] });
     }
 
     this.setState({ status: 'resolved' });
+  };
+
+  componentDidUpdate(prevProps, prevState) {
+    const { searchQuery, page } = this.state;
+    if (searchQuery === prevState.searchQuery && page === prevState.page) {
+      return;
+    }
+
+    !searchQuery
+      ? this.setState({
+          status: 'rejected',
+          error: 'Empty input, write something, please.',
+        })
+      : this.loadNewImages(searchQuery, page, prevState);
   }
 
   render() {
