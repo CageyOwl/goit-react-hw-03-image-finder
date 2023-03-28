@@ -12,6 +12,7 @@ import { PER_PAGE } from '../services/api';
 import STATUS from '../services/statuses';
 
 import css from './app.module.css';
+import btncss from './Button/button.module.css';
 
 export class App extends React.Component {
   state = {
@@ -126,7 +127,7 @@ export class App extends React.Component {
         )}
         {status === STATUS.RESOLVED && page !== maxPage && (
           // <Button onLoadMoreClick={this.onLoadMoreClick} />
-          <button className={css.button} type="button" onClick={onLoadMoreClick}>Load more</button>
+          <button className={btncss.button} type="button" onClick={this.onLoadMoreClick}>Load more</button>
         )}
 
         {isModalOpened && (
