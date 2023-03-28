@@ -1,17 +1,21 @@
 import React from 'react';
-import Searchbar from './Searchbar/Searchbar';
+import { animateScroll } from 'react-scroll';
+
 import api from '../services/api';
+import Searchbar from './Searchbar/Searchbar';
 import Loader from './Loader/Loader';
 import ImageGallery from './ImageGallery/ImageGallery';
-import { PER_PAGE } from '../services/api';
-import Button from './Button/Button';
+// import Button from './Button/Button';
 import Modal from './Modal/Modal';
-import { animateScroll } from 'react-scroll';
+
+import { PER_PAGE } from '../services/api';
+import STATUS from '../services/statuses';
+
 import css from './app.module.css';
 
 export class App extends React.Component {
   state = {
-    status: 'idle',
+    status: STATUS.IDLE,
     error: '',
     searchQuery: '',
     page: 0,
@@ -60,7 +64,7 @@ export class App extends React.Component {
   };
 
   loadNewImages = async (searchQuery, page, prevState) => {
-    this.setState({ status: 'pending' });
+    this.setState({ status: STATUS.PENDING });
 
     let data = {};
     try {
@@ -69,7 +73,7 @@ export class App extends React.Component {
         throw new Error('No results found.');
       }
     } catch (error) {
-      this.setState({ status: 'rejected', error: error.message });
+      this.setState({ status: STATUS.REJECTED, error: error.message });
       return;
     }
 
@@ -82,7 +86,7 @@ export class App extends React.Component {
       this.setState({ hits: [...prevState.hits, ...data.hits] });
     }
 
-    this.setState({ status: 'resolved' });
+    this.setState({ status: STATUS.RESOLVED });
   };
 
   componentDidUpdate(prevProps, prevState) {
@@ -93,7 +97,7 @@ export class App extends React.Component {
 
     !searchQuery
       ? this.setState({
-          status: 'rejected',
+          status: STATUS.REJECTED,
           error: 'Empty input, write something, please.',
         })
       : this.loadNewImages(searchQuery, page, prevState);
@@ -115,13 +119,14 @@ export class App extends React.Component {
       <div className={css.app}>
         <Searchbar onSubmit={this.onSubmit} />
 
-        {status === 'pending' && <Loader />}
-        {status === 'rejected' && <p className={css.error}>{error}</p>}
-        {status === 'resolved' && (
+        {status === STATUS.PENDING && <Loader />}
+        {status === STATUS.REJECTED && <p className={css.error}>{error}</p>}
+        {status === STATUS.RESOLVED && (
           <ImageGallery hits={hits} openModal={this.openModal} />
         )}
-        {status === 'resolved' && page !== maxPage && (
-          <Button onLoadMoreClick={this.onLoadMoreClick} />
+        {status === STATUS.RESOLVED && page !== maxPage && (
+          // <Button onLoadMoreClick={this.onLoadMoreClick} />
+          <button className={css.button} type="button" onClick={onLoadMoreClick}>Load more</button>
         )}
 
         {isModalOpened && (
