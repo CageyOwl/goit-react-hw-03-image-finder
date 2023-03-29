@@ -20,6 +20,7 @@ export default class Searchbar extends React.Component {
           onSubmit={event => {
             event.preventDefault();
             this.props.onSubmit(this.state.value.trim());
+            this.setState({ value: '' });
           }}
         >
           <button className={css.button} type="submit">

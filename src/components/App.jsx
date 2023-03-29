@@ -5,14 +5,14 @@ import api from '../services/api';
 import Searchbar from './Searchbar/Searchbar';
 import Loader from './Loader/Loader';
 import ImageGallery from './ImageGallery/ImageGallery';
-// import Button from './Button/Button';
+import Button from './Button/Button';
 import Modal from './Modal/Modal';
 
 import { PER_PAGE } from '../services/api';
 import STATUS from '../services/statuses';
 
 import css from './app.module.css';
-import btncss from './Button/button.module.css';
+
 
 export class App extends React.Component {
   state = {
@@ -27,10 +27,10 @@ export class App extends React.Component {
     modalImgURL: '',
   };
 
-  onSubmit = formValue => {
-    if (this.state.searchQuery !== formValue) {
-      this.setState({ searchQuery: formValue, page: 1 });
-    }
+  onSubmit = (formValue) => {
+    if (!formValue) return;
+    if (this.state.searchQuery === formValue) return;
+    this.setState({ searchQuery: formValue, page: 1 });
   };
 
   toggleModal = () => {
@@ -54,7 +54,7 @@ export class App extends React.Component {
 
   onLoadMoreClick = () => {
     this.setState(prevState => {
-      return { page: ++prevState.page };
+      return {page: prevState.page + 1};
     });
 
     animateScroll.scrollToBottom({
@@ -125,9 +125,8 @@ export class App extends React.Component {
         {status === STATUS.RESOLVED && (
           <ImageGallery hits={hits} openModal={this.openModal} />
         )}
-        {status === STATUS.RESOLVED && page !== maxPage && (
-          // <Button onLoadMoreClick={this.onLoadMoreClick} />
-          <button className={btncss.button} type="button" onClick={this.onLoadMoreClick}>Load more</button>
+        {(status === STATUS.RESOLVED && page !== maxPage) && (
+          <Button onLoadMoreClick={this.onLoadMoreClick} />
         )}
 
         {isModalOpened && (
